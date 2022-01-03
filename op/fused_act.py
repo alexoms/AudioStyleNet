@@ -6,7 +6,7 @@ from torch.utils.cpp_extension import load
 try:
     import fused
 except ModuleNotFoundError:
-    fused = load('fused', sources=['op/fused_bias_act.cpp', 'op/fused_bias_act_kernel.cu'])
+    fused = load('fused', sources=['drive/MyDrive/AudioStyleNet/op/fused_bias_act.cpp', 'drive/MyDrive/AudioStyleNet/op/fused_bias_act_kernel.cu'])
 
 
 class FusedLeakyReLUFunctionBackward(Function):
