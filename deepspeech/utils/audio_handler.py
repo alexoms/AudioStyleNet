@@ -46,11 +46,11 @@ class AudioHandler:
         self.audio_window_size = config['audio_window_size']
         self.audio_window_stride = config['audio_window_stride']
 
-        with tf.gfile.GFile(self.config['deepspeech_graph_fname'], "rb") as f:
-            self.graph_def = tf.GraphDef()
+        with tf.io.gfile.GFile(self.config['deepspeech_graph_fname'], "rb") as f:
+            self.graph_def = tf.compat.v1.GraphDef()
             self.graph_def.ParseFromString(f.read())
 
-        self.graph = tf.get_default_graph()
+        self.graph = tf.compat.v1.get_default_graph()
         tf.import_graph_def(self.graph_def, name="deepspeech")
 
     def process(self, audio, target_fps=60):
@@ -109,17 +109,20 @@ class AudioHandler:
         # input_tensor = graph.get_tensor_by_name('deepspeech/input_node:0')
         # seq_length = graph.get_tensor_by_name('deepspeech/input_lengths:0')
         # layer_6 = graph.get_tensor_by_name('deepspeech/logits:0')
-
-        input_tensor = self.graph.get_tensor_by_name('deepspeech/input_node:0')
-        seq_length = self.graph.get_tensor_by_name('deepspeech/input_lengths:0')
-        layer_6 = self.graph.get_tensor_by_name('deepspeech/logits:0')
+        #input_tensor = 'input_node:0'
+        input_tensor = self.graph.get_tensor_by_name('input_node:0')
+        #input_tensor = self.graph.get_tensor_by_name('deepspeech/input_node:0')
+        seq_length = self.graph.get_tensor_by_name('input_lengths:0')
+        #seq_length = self.graph.get_tensor_by_name('deepspeech/input_lengths:0')
+        layer_6 = self.graph.get_tensor_by_name('logits:0')
+        #layer_6 = self.graph.get_tensor_by_name('deepspeech/logits:0')
 
         n_input = 26
         n_context = 9
 
         processed_audio = copy.deepcopy(audio)
         # with tf.Session(graph=graph) as sess:
-        with tf.Session(graph=self.graph) as sess:
+        with tf.compat.v1.Session(graph=self.graph) as sess:
             for subj in audio.keys():
                 for seq in audio[subj].keys():
                     print('process %s - %s' % (subj, seq))
